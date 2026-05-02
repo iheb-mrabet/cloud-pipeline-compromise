@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Recon') {
+            steps {
+                sh 'whoami'
+                sh 'pwd'
+                sh 'ls -la'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t vulnerable-flask-app:ci .'
+            }
+        }
+
+        stage('Run Container Test') {
+            steps {
+                sh '''
+                docker rm -f flask-ci-test || true
+                docker run -d --name flask-ci-test -p 5001:5000 vulnerable-flask-app:ci
+                sleep 3
+                curl http://localhost:5001
+                curl http://localhost:5001/secret
+                docker rm -f flask-ci-test
+                '''
+            }
+        }
+    }
+}

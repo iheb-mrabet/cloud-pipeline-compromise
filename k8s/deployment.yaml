@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnerable-flask-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vulnerable-flask-app
+  template:
+    metadata:
+      labels:
+        app: vulnerable-flask-app
+    spec:
+      automountServiceAccountToken: false
+
+      containers:
+      - name: vulnerable-flask-app
+        image: vulnerable-flask-app:ci
+        imagePullPolicy: Never
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+
+        volumeMounts:
+        - name: secret-volume
+          mountPath: "/etc/secrets"
+          readOnly: true
+
+        ports:
+        - containerPort: 5000
+
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: api-secret
