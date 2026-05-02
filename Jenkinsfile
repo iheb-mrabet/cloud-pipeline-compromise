@@ -65,11 +65,11 @@ pipeline {
             }
         }
 
-        stage('Registry Connectivity Test') {
+        stage('HTTPS Registry Test') {
             steps {
                 sh '''
-                curl -s http://host.docker.internal:5000/v2/ || exit 1
-                echo "✅ Registry reachable from Jenkins"
+                curl -k https://host.docker.internal:5000/v2/ || exit 1
+                echo "✅ HTTPS registry reachable"
                 '''
             }
         }
@@ -81,7 +81,6 @@ pipeline {
 
                 COSIGN_PASSWORD="24726739" cosign sign \
                   --key /var/jenkins_home/cosign.key \
-                  --allow-http-registry=true \
                   --allow-insecure-registry=true \
                   --tlog-upload=false \
                   $COSIGN_DIGEST
@@ -96,7 +95,6 @@ pipeline {
 
                 cosign verify \
                   --key /var/jenkins_home/cosign.pub \
-                  --allow-http-registry=true \
                   --allow-insecure-registry=true \
                   --insecure-ignore-tlog=true \
                   $COSIGN_DIGEST
@@ -127,7 +125,7 @@ pipeline {
 
         stage('Done') {
             steps {
-                sh 'echo "🚀 ENTERPRISE PIPELINE FULLY SECURED"'
+                sh 'echo "🚀 HTTPS REGISTRY + COSIGN PIPELINE SECURED"'
             }
         }
     }

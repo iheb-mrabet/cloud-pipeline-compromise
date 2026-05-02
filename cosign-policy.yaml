@@ -1,0 +1,14 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: require-signed-vulnerable-flask
+spec:
+  images:
+  - glob: "172.19.0.1:5000/vulnerable-flask-app*"
+  authorities:
+  - key:
+      data: |
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvrHv2kGSgGWDVjfYp2diZWuNbckE
+        7ze4YyIRHWLcVj/gB1bFwGjdiIJT1qELcUMOWNPKw+c0ATX5O+blvNxGnQ==
+        -----END PUBLIC KEY-----

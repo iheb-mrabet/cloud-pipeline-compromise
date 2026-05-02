@@ -1,0 +1,12 @@
+apiVersion: policy.sigstore.dev/v1beta1
+kind: ClusterImagePolicy
+metadata:
+  name: require-keyless-github-actions
+spec:
+  images:
+  - glob: "ghcr.io/iheb-mrabet/cloud-pipeline-compromise/*"
+  authorities:
+  - keyless:
+      identities:
+      - issuer: "https://token.actions.githubusercontent.com"
+        subject: "https://github.com/iheb-mrabet/cloud-pipeline-compromise/.github/workflows/secure-build-sign.yml@refs/heads/main"
